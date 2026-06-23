@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Oasis.EntityFrameworkCore.Interceptors.DryRun.Tests/Oasis.EntityFrameworkCore.Interceptors.DryRun.Tests.csproj" />
+  <Project Path="Oasis.EntityFrameworkCore.Interceptors.DryRun/Oasis.EntityFrameworkCore.Interceptors.DryRun.csproj" />
+</Solution>
