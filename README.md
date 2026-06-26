@@ -9,5 +9,8 @@ The library is designed for the following situation
 - Note that this library only handles database accesses via EntityFramework DbContext. Other database access approaches or external system accesses (e.g. Web API calling) is not covered by this library.
 ## Design
 **IDryRunnable** interface, it provides a switch to turn on/off DryRun mode. Note that this switch must be set before any database write operation is performed if this interceptor is used, and the value can only be set once (Pretty werid use case to run one operation in DryRun mode, then next for real, and vise-versa).
+
 This Interceptor is implemented with 3 basic interceptors: SaveChangesInterceptor, DbCommandInterceptor and TransactionInterceptor. Note that for dry run, all write operations will be suppressed. SaveChangesInterceptor will AcceptAllChanges, DbCommandInterceptor will skip the execution, and TransactionInterceptor will roll back the transaction.
+
 **IDryRunnable** interface also provides a series of events for callers to subscribe based on dry run operations intercepted by the basic interceptors mentioned above.
+
