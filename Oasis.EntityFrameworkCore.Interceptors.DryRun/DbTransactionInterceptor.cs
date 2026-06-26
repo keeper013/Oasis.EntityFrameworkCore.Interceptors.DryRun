@@ -12,13 +12,13 @@ internal interface IDryRunTransactionMonitor
     public bool IsTransactionActive { get; }
 }
 
-internal sealed class DbTransactionInterceptor(DryRunnableInterceptorAggregator aggregator)
+internal sealed class DbTransactionInterceptor(DryRunInterceptor interceptor)
     : Microsoft.EntityFrameworkCore.Diagnostics.DbTransactionInterceptor,
     IDryRunTransactionMonitor
 {
     // As DbContext isn't supposed to run parally, only 1 transaction can run at 1 time,
     // so only storing the out most transaction id is the right approach for rolling back for dry run commission
-    private readonly DryRunnableInterceptorAggregator _aggregator = aggregator;
+    private readonly DryRunInterceptor _interceptor = interceptor;
     private Guid? _transactionId = null;
     private bool? _dryRun = null;
 
@@ -46,7 +46,7 @@ internal sealed class DbTransactionInterceptor(DryRunnableInterceptorAggregator 
         if (DryRun && _transactionId == null)
         {
             _transactionId = eventData.TransactionId;
-            _aggregator.RaiseOnDryRunTransactionStarted(eventData);
+            _interceptor.RaiseOnDryRunTransactionStarted(eventData);
         }
 
         return base.TransactionStarted(connection, eventData, result);
@@ -57,7 +57,7 @@ internal sealed class DbTransactionInterceptor(DryRunnableInterceptorAggregator 
         if (DryRun && _transactionId == null)
         {
             _transactionId = eventData.TransactionId;
-            _aggregator.RaiseOnDryRunTransactionStarted(eventData);
+            _interceptor.RaiseOnDryRunTransactionStarted(eventData);
         }
 
         return base.TransactionStartedAsync(connection, eventData, result, cancellationToken);
@@ -77,7 +77,7 @@ internal sealed class DbTransactionInterceptor(DryRunnableInterceptorAggregator 
                     transaction.Rollback();
                 }
 
-                _aggregator.RaiseOnDryRunTransactionCommissionSuppressed(eventData);
+                _interceptor.RaiseOnDryRunTransactionCommissionSuppressed(eventData);
             }
 
             return result;
@@ -86,10 +86,10 @@ internal sealed class DbTransactionInterceptor(DryRunnableInterceptorAggregator 
         if (dryRun)
         {
             // roll back out most transaction
-            _aggregator.RaiseOnDryRunTransactionCommitting(eventData);
+            _interceptor.RaiseOnDryRunTransactionCommitting(eventData);
             _transactionId = null;
             transaction.Rollback();
-            _aggregator.RaiseOnDryRunTransactionCommitted(eventData);
+            _interceptor.RaiseOnDryRunTransactionCommitted(eventData);
             return InterceptionResult.Suppress();
         }
 
@@ -110,7 +110,7 @@ internal sealed class DbTransactionInterceptor(DryRunnableInterceptorAggregator 
                     await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
                 }
                 
-                _aggregator.RaiseOnDryRunTransactionCommissionSuppressed(eventData);
+                _interceptor.RaiseOnDryRunTransactionCommissionSuppressed(eventData);
             }
 
             return result;
@@ -119,10 +119,10 @@ internal sealed class DbTransactionInterceptor(DryRunnableInterceptorAggregator 
         if (dryRun)
         {
             // roll back out most transaction
-            _aggregator.RaiseOnDryRunTransactionCommitting(eventData);
+            _interceptor.RaiseOnDryRunTransactionCommitting(eventData);
             _transactionId = null;
             await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
-            _aggregator.RaiseOnDryRunTransactionCommitted(eventData);
+            _interceptor.RaiseOnDryRunTransactionCommitted(eventData);
             return InterceptionResult.Suppress();
         }
 

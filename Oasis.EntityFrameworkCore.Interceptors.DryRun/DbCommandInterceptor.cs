@@ -3,10 +3,10 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Data.Common;
 
-internal sealed class DbCommandInterceptor(DryRunnableInterceptorAggregator aggregator, IDryRunTransactionMonitor monitor)
+internal sealed class DbCommandInterceptor(DryRunInterceptor interceptor, IDryRunTransactionMonitor monitor)
     : Microsoft.EntityFrameworkCore.Diagnostics.DbCommandInterceptor
 {
-    private readonly DryRunnableInterceptorAggregator _aggregator = aggregator;
+    private readonly DryRunInterceptor _interceptor = interceptor;
     private readonly IDryRunTransactionMonitor _monitor = monitor;
     private bool? _dryRun = null;
 
@@ -34,7 +34,7 @@ internal sealed class DbCommandInterceptor(DryRunnableInterceptorAggregator aggr
         {
             if (dryRun && !_monitor.IsTransactionActive)
             {
-                _aggregator.RaiseOnDryRunCommandSuppressed(eventData);
+                _interceptor.RaiseOnDryRunCommandSuppressed(eventData);
             }
 
             return result;
@@ -42,7 +42,7 @@ internal sealed class DbCommandInterceptor(DryRunnableInterceptorAggregator aggr
 
         if (dryRun && !_monitor.IsTransactionActive)
         {
-            _aggregator.RaiseOnDryRunCommandExecution(eventData);
+            _interceptor.RaiseOnDryRunCommandExecution(eventData);
             return InterceptionResult<int>.SuppressWithResult(0);
         }
 
@@ -56,7 +56,7 @@ internal sealed class DbCommandInterceptor(DryRunnableInterceptorAggregator aggr
         {
             if (dryRun && !_monitor.IsTransactionActive)
             {
-                _aggregator.RaiseOnDryRunCommandSuppressed(eventData);
+                _interceptor.RaiseOnDryRunCommandSuppressed(eventData);
             }
 
             return new ValueTask<InterceptionResult<int>>(result);
@@ -64,7 +64,7 @@ internal sealed class DbCommandInterceptor(DryRunnableInterceptorAggregator aggr
 
         if (dryRun && !_monitor.IsTransactionActive)
         {
-            _aggregator.RaiseOnDryRunCommandExecution(eventData);
+            _interceptor.RaiseOnDryRunCommandExecution(eventData);
             return new ValueTask<InterceptionResult<int>>(InterceptionResult<int>.SuppressWithResult(0));
         }
 

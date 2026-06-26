@@ -7,7 +7,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public void DryRunSuppressTest_ExecuteCommand()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         DbContext.Database.ExecuteSqlRaw("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test')");
         Assert.True(TraceFlags.Match(true, [DryRunEventTrace.CommandSuppressed]));
         Assert.False(DbContext.Set<Entity1>().Any());
@@ -16,7 +16,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public async Task DryRunSuppressTest_ExecuteCommandAsync()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         await DbContext.Database.ExecuteSqlRawAsync("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test')");
         Assert.True(TraceFlags.Match(true, [DryRunEventTrace.CommandSuppressed]));
         Assert.False(DbContext.Set<Entity1>().Any());
@@ -25,7 +25,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public void DryRunSuppressTest_SaveChanges()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         var entity = new Entity1 { Id = 1, Name = "Test" };
         DbContext.Add(entity);
         DbContext.SaveChanges();
@@ -38,7 +38,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public async Task DryRunSuppressTest_SaveChangesAsync()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         var entity = new Entity1 { Id = 1, Name = "Test" };
         await DbContext.AddAsync(entity);
         await DbContext.SaveChangesAsync();
@@ -51,7 +51,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public void DryRunSuppressTest_TransactionSaveChanges()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction = DbContext.Database.BeginTransaction())
         {
             var entity = new Entity1 { Id = 1, Name = "Test" };
@@ -69,7 +69,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public async Task DryRunSuppressTest_TransactionSaveChangesAsync()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction = await DbContext.Database.BeginTransactionAsync())
         {
             var entity = new Entity1 { Id = 1, Name = "Test" };
@@ -87,7 +87,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public void DryRunSuppressTest_TransactionDbCommand()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction = DbContext.Database.BeginTransaction())
         {
             DbContext.Database.ExecuteSqlRaw("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test')");
@@ -100,7 +100,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public async Task DryRunSuppressTest_TransactionDbCommandAsync()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction = await DbContext.Database.BeginTransactionAsync())
         {
             await DbContext.Database.ExecuteSqlRawAsync("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test')");
@@ -113,7 +113,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public void DryRunSuppressAllTest()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction = DbContext.Database.BeginTransaction())
         {
             var entity = new Entity1 { Id = 1, Name = "Test1" };
@@ -132,7 +132,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public async Task DryRunSuppressAllTestAsync()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction = await DbContext.Database.BeginTransactionAsync())
         {
             var entity = new Entity1 { Id = 1, Name = "Test2" };
@@ -151,7 +151,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public void DryRunSuppressTest_MultipleTransactions()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction1 = DbContext.Database.BeginTransaction())
         {
             var entity = new Entity1 { Id = 1, Name = "Test" };
@@ -175,7 +175,7 @@ public sealed class DryRunSuppressTest : DryRunSuppressAllTestBase
     [Fact]
     public async Task DryRunSuppressTest_MultipleTransactionsAsync()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction1 = await DbContext.Database.BeginTransactionAsync())
         {
             var entity = new Entity1 { Id = 1, Name = "Test" };

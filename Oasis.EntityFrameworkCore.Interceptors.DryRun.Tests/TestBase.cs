@@ -7,7 +7,7 @@ using Oasis.EntityFrameworkCore.Interceptors.DryRun;
 public abstract class TestBase : IDisposable
 {
     private readonly SqliteConnection _connection;
-    private DbContext<DryRunnableInterceptorAggregator, IDryRunnable>? _dbContext;
+    private DbContext<DryRunInterceptor, IDryRunHandle>? _dbContext;
     private bool _isDisposed;
 
     protected TestBase()
@@ -16,7 +16,7 @@ public abstract class TestBase : IDisposable
         _connection.Open();
     }
 
-    protected DbContext<DryRunnableInterceptorAggregator, IDryRunnable> DbContext
+    protected DbContext<DryRunInterceptor, IDryRunHandle> DbContext
     {
         get
         {
@@ -37,7 +37,7 @@ public abstract class TestBase : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void ConfigureDbContext(DbContext<DryRunnableInterceptorAggregator, IDryRunnable> context)
+    protected virtual void ConfigureDbContext(DbContext<DryRunInterceptor, IDryRunHandle> context)
     {
     }
 
@@ -62,7 +62,7 @@ public abstract class TestBase : IDisposable
         _isDisposed = true;
     }
 
-    private DbContext<DryRunnableInterceptorAggregator, IDryRunnable> InitializeDatabaseContext()
+    private DbContext<DryRunInterceptor, IDryRunHandle> InitializeDatabaseContext()
     {
         var initializerOptions = new DbContextOptionsBuilder<InitializerDbContext>()
             .UseSqlite(_connection)
@@ -72,6 +72,6 @@ public abstract class TestBase : IDisposable
         var optionsBuilder = new DbContextOptionsBuilder<DbContext>()
             .UseSqlite(_connection);
         optionsBuilder = ConfigureDbContextOptionsBuilder(optionsBuilder);
-        return new DbContext(new DryRunnableInterceptorAggregator(), optionsBuilder.Options);
+        return new DbContext(new DryRunInterceptor(), optionsBuilder.Options);
     }
 }

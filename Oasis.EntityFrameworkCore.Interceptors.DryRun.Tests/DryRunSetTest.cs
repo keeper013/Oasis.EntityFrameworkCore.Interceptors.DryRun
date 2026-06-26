@@ -17,7 +17,7 @@ public sealed class DryRunSetTest : TestBase
     [InlineData(false)]
     public void DryRunMustBeSetBeforeDatabaseOperations_ExecuteCommand_Positive(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         DbContext.Database.ExecuteSqlRaw("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test')");
     }
 
@@ -33,7 +33,7 @@ public sealed class DryRunSetTest : TestBase
     [InlineData(false)]
     public void DryRunMustBeSetBeforeDatabaseOperations_ExecuteRawQuery_Positive(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         DbContext.Database.ExecuteSqlRaw("SELECT * FROM Entity1 WHERE Id = 1");
     }
 
@@ -55,7 +55,7 @@ public sealed class DryRunSetTest : TestBase
     [InlineData(false)]
     public async Task DryRunMustBeSetBeforeDatabaseOperations_ExecuteCommandAsync_Positive(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         await DbContext.Database.ExecuteSqlRawAsync("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test')");
     }
 
@@ -71,7 +71,7 @@ public sealed class DryRunSetTest : TestBase
     [InlineData(false)]
     public async Task DryRunMustBeSetBeforeDatabaseOperations_ExecuteRawQueryAsync_Positive(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         await DbContext.Database.ExecuteSqlRawAsync("SELECT * FROM Entity1 WHERE Id = 1");
     }
 
@@ -95,7 +95,7 @@ public sealed class DryRunSetTest : TestBase
     [InlineData(false)]
     public void DryRunMustBeSetBeforeDatabaseOperations_SaveChanges_Positive(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         var entity = new Entity1 { Id = 1, Name = "Test" };
         DbContext.Add(entity);
         DbContext.SaveChanges();
@@ -115,7 +115,7 @@ public sealed class DryRunSetTest : TestBase
     [InlineData(false)]
     public async Task DryRunMustBeSetBeforeDatabaseOperations_SaveChangesAsync_Positive(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         var entity = new Entity1 { Id = 1, Name = "Test" };
         await DbContext.AddAsync(entity);
         await DbContext.SaveChangesAsync();
@@ -145,7 +145,7 @@ public sealed class DryRunSetTest : TestBase
     [InlineData(false)]
     public void DryRunMustBeSetBeforeDatabaseOperations_TransactionStarts_Positive(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         using var transaction = DbContext.Database.BeginTransaction();
         var entity = new Entity1 { Id = 1, Name = "Test" };
         DbContext.Add(entity);
@@ -165,7 +165,7 @@ public sealed class DryRunSetTest : TestBase
     [InlineData(false)]
     public async Task DryRunMustBeSetBeforeDatabaseOperations_TransactionStartsAsync_Positive(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         using var transaction = await DbContext.Database.BeginTransactionAsync();
         var entity = new Entity1 { Id = 1, Name = "Test" };
         await DbContext.AddAsync(entity);
@@ -180,7 +180,7 @@ public sealed class DryRunSetTest : TestBase
     [InlineData(false, false)]
     public void DryRunCanOnlyBeSetOnce(bool value1, bool value2)
     {
-        var handle = DbContext.GetHandle<IDryRunnable>();
+        var handle = DbContext.GetHandle<IDryRunHandle>();
         handle.DryRun = value1;
         var exception = Assert.Throws<InvalidOperationException>(() => handle.DryRun = value2);
         Assert.Equal(Common.DryRunCanOnlyBeSetOnce, exception.Message);

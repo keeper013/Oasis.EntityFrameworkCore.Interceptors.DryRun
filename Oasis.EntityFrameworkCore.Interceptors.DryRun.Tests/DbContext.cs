@@ -3,8 +3,8 @@
 using Microsoft.EntityFrameworkCore;
 using Oasis.EntityFrameworkCore.Interceptors.DryRun;
 
-public sealed class DbContext(DryRunnableInterceptorAggregator aggregator, DbContextOptions options)
-    : DbContext<DryRunnableInterceptorAggregator, IDryRunnable>(aggregator, options)
+public sealed class DbContext(DryRunInterceptor intercpetor, DbContextOptions options)
+    : DbContext<DryRunInterceptor, IDryRunHandle>(intercpetor, options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

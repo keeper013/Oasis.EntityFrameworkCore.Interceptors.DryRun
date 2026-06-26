@@ -7,7 +7,7 @@ public sealed class DryRunRollBackThenSuppressTest : DryRunRollBackThenSupppress
     [Fact]
     public void DryRunSuppressTest_MultipleTransactions()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction1 = DbContext.Database.BeginTransaction())
         {
             var entity = new Entity1 { Id = 1, Name = "Test" };
@@ -33,7 +33,7 @@ public sealed class DryRunRollBackThenSuppressTest : DryRunRollBackThenSupppress
     [Fact]
     public async Task DryRunSuppressTest_MultipleTransactionsAsync()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction1 = await DbContext.Database.BeginTransactionAsync())
         {
             var entity = new Entity1 { Id = 1, Name = "Test" };

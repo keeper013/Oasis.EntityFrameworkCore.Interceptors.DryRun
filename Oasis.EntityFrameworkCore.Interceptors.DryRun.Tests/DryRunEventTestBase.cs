@@ -50,9 +50,9 @@ public abstract class DryRunEventTestBase : TestBase
 {
     protected DryRunEventTrace TraceFlags { get; private set; }
 
-    protected override void ConfigureDbContext(DbContext<DryRunnableInterceptorAggregator, IDryRunnable> context)
+    protected override void ConfigureDbContext(DbContext<DryRunInterceptor, IDryRunHandle> context)
     {
-        var handle = context.GetHandle<IDryRunnable>();
+        var handle = context.GetHandle<IDryRunHandle>();
 
         handle.OnDryRunSaveChangesSuppressed += (sender, eventData) =>
         {

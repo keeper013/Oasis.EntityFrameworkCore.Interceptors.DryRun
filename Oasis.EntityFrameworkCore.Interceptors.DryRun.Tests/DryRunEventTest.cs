@@ -9,7 +9,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public void DryRunEventTest_ExecuteCommand(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         DbContext.Database.ExecuteSqlRaw("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test')");
         Assert.True(TraceFlags.Match(dryRun, [DryRunEventTrace.CommandExecution]));
         Assert.NotEqual(dryRun, DbContext.Set<Entity1>().Any());
@@ -20,7 +20,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public async Task DryRunEventTest_ExecuteCommandAsync(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         await DbContext.Database.ExecuteSqlRawAsync("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test')");
         Assert.True(TraceFlags.Match(dryRun, [DryRunEventTrace.CommandExecution]));
         Assert.NotEqual(dryRun, DbContext.Set<Entity1>().Any());
@@ -31,7 +31,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public void DryRunEventTest_SaveChanges(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         var entity = new Entity1 { Id = 1, Name = "Test" };
         DbContext.Add(entity);
         DbContext.SaveChanges();
@@ -46,7 +46,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public async Task DryRunEventTest_SaveChangesAsync(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         var entity = new Entity1 { Id = 1, Name = "Test" };
         DbContext.Add(entity);
         await DbContext.SaveChangesAsync();
@@ -61,7 +61,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public void DryRunEventTest_TransactionSaveChanges(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         using (var transaction = DbContext.Database.BeginTransaction())
         {
             var entity = new Entity1 { Id = 1, Name = "Test" };
@@ -81,7 +81,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public void DryRunEventTest_TransactionExecuteCommand(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         using (var transaction = DbContext.Database.BeginTransaction())
         {
             DbContext.Database.ExecuteSqlRaw("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test1')");
@@ -97,7 +97,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public async Task DryRunEventTest_TransactionSaveChangesAsync(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         using (var transaction = await DbContext.Database.BeginTransactionAsync())
         {
             var entity = new Entity1 { Id = 2, Name = "Test2" };
@@ -115,7 +115,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public async Task DryRunEventTest_TransactionExecuteCommandAsync(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         using (var transaction = await DbContext.Database.BeginTransactionAsync())
         {
             await DbContext.Database.ExecuteSqlRawAsync("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test1')");
@@ -131,7 +131,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public void DryRunEventTest_CommandAndSaveChanges(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         DbContext.Database.ExecuteSqlRaw("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test1')");
         var entity = new Entity1 { Id = 2, Name = "Test2" };
         DbContext.Add(entity);
@@ -147,7 +147,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public async Task DryRunEventTest_CommandAndSaveChangesAsync(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         await DbContext.Database.ExecuteSqlRawAsync("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test1')");
         var entity = new Entity1 { Id = 2, Name = "Test2" };
         await DbContext.AddAsync(entity);
@@ -163,7 +163,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public void DryRunEventTest_MultileTransactions(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         using (var transaction1 = DbContext.Database.BeginTransaction())
         {
             DbContext.Database.ExecuteSqlRaw("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test1')");
@@ -192,7 +192,7 @@ public sealed class DryRunEventTest : DryRunEventTestBase
     [InlineData(false)]
     public async Task DryRunEventTest_MultileTransactionsAsync(bool dryRun)
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = dryRun;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = dryRun;
         using (var transaction1 = await DbContext.Database.BeginTransactionAsync())
         {
             await DbContext.Database.ExecuteSqlRawAsync("INSERT INTO Entity1 (Id, Name) VALUES (1, 'Test1')");

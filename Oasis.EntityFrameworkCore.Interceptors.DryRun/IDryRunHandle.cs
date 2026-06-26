@@ -2,7 +2,7 @@
 
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-public interface IDryRunnable
+public interface IDryRunHandle
 {
     public event EventHandler<DbContextEventData>? OnDryRunSaveChangesSuppressed;
 

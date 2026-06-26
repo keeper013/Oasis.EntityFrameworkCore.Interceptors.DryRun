@@ -1,16 +1,15 @@
 ﻿namespace Oasis.EntityFrameworkCore.Interceptors.DryRun;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-public sealed class DryRunnableInterceptorAggregator : IInterceptorComposite, IDryRunnable
+public sealed class DryRunInterceptor : Oasis.EntityFrameworkCore.Interceptors.IInterceptor, IDryRunHandle
 {
     private readonly DbTransactionInterceptor _dbTransactionInterceptor;
     private readonly DbCommandInterceptor _commandInterceptor;
     private readonly SaveChangesInterceptor _saveChangesInterceptor;
     private bool? _dryRun = null;
 
-    public DryRunnableInterceptorAggregator()
+    public DryRunInterceptor()
     {
         _dbTransactionInterceptor = new DbTransactionInterceptor(this);
         _commandInterceptor = new DbCommandInterceptor(this, _dbTransactionInterceptor);
@@ -52,10 +51,7 @@ public sealed class DryRunnableInterceptorAggregator : IInterceptorComposite, ID
         }
     }
 
-    public void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.AddInterceptors(_dbTransactionInterceptor, _commandInterceptor, _saveChangesInterceptor);
-    }
+    public IInterceptor[] Interceptors => [_dbTransactionInterceptor, _commandInterceptor, _saveChangesInterceptor];
 
     internal void RaiseOnDryRunSaveChangesSuppressed(DbContextEventData eventData)
     {

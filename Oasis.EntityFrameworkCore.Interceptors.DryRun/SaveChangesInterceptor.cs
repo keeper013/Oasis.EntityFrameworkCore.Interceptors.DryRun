@@ -2,10 +2,10 @@
 
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-internal sealed class SaveChangesInterceptor(DryRunnableInterceptorAggregator aggregator, IDryRunTransactionMonitor monitor)
+internal sealed class SaveChangesInterceptor(DryRunInterceptor interceptor, IDryRunTransactionMonitor monitor)
     : Microsoft.EntityFrameworkCore.Diagnostics.SaveChangesInterceptor
 {
-    private readonly DryRunnableInterceptorAggregator _aggregator = aggregator;
+    private readonly DryRunInterceptor _interceptor = interceptor;
     private readonly IDryRunTransactionMonitor _monitor = monitor;
     private bool? _dryRun = null;
 
@@ -33,7 +33,7 @@ internal sealed class SaveChangesInterceptor(DryRunnableInterceptorAggregator ag
         {
             if (dryRun && !_monitor.IsTransactionActive)
             {
-                _aggregator.RaiseOnDryRunSaveChangesSuppressed(eventData);
+                _interceptor.RaiseOnDryRunSaveChangesSuppressed(eventData);
             }
 
             return result;
@@ -41,11 +41,11 @@ internal sealed class SaveChangesInterceptor(DryRunnableInterceptorAggregator ag
 
         if (dryRun && !_monitor.IsTransactionActive)
         {
-            _aggregator.RaiseOnDryRunSavingChanges(eventData);
+            _interceptor.RaiseOnDryRunSavingChanges(eventData);
 
             // pretend in memory that the transaction is done, but in fact the data is not persisted.
             eventData.Context?.ChangeTracker.AcceptAllChanges();
-            _aggregator.RaiseOnDryRunSavedChanges(eventData);
+            _interceptor.RaiseOnDryRunSavedChanges(eventData);
             return InterceptionResult<int>.SuppressWithResult(0);
         }
 
@@ -59,7 +59,7 @@ internal sealed class SaveChangesInterceptor(DryRunnableInterceptorAggregator ag
         {
             if (dryRun && !_monitor.IsTransactionActive)
             {
-                _aggregator.RaiseOnDryRunSaveChangesSuppressed(eventData);
+                _interceptor.RaiseOnDryRunSaveChangesSuppressed(eventData);
             }
 
             return new ValueTask<InterceptionResult<int>>(result);
@@ -67,11 +67,11 @@ internal sealed class SaveChangesInterceptor(DryRunnableInterceptorAggregator ag
 
         if (dryRun && !_monitor.IsTransactionActive)
         {
-            _aggregator.RaiseOnDryRunSavingChanges(eventData);
+            _interceptor.RaiseOnDryRunSavingChanges(eventData);
 
             // pretend in memory that the transaction is done, but in fact the data is not persisted.
             eventData.Context!.ChangeTracker.AcceptAllChanges();
-            _aggregator.RaiseOnDryRunSavedChanges(eventData);
+            _interceptor.RaiseOnDryRunSavedChanges(eventData);
             return new ValueTask<InterceptionResult<int>>(InterceptionResult<int>.SuppressWithResult(0));
         }
 

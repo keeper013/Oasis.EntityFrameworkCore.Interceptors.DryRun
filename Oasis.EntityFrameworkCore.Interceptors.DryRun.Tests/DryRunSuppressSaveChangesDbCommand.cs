@@ -7,7 +7,7 @@ public sealed class DryRunSuppressSaveChangesDbCommand : DryRunSuppressSaveChang
     [Fact]
     public void DryRunSuppressest()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction = DbContext.Database.BeginTransaction())
         {
             var entity = new Entity1 { Id = 1, Name = "Test1" };
@@ -26,7 +26,7 @@ public sealed class DryRunSuppressSaveChangesDbCommand : DryRunSuppressSaveChang
     [Fact]
     public async Task DryRunSuppressTestAsync()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         using (var transaction = await DbContext.Database.BeginTransactionAsync())
         {
             var entity = new Entity1 { Id = 1, Name = "Test2" };
@@ -45,7 +45,7 @@ public sealed class DryRunSuppressSaveChangesDbCommand : DryRunSuppressSaveChang
     [Fact]
     public void DryRunSuppressNoTransactionTest()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         var entity = new Entity1 { Id = 1, Name = "Test1" };
         DbContext.Add(entity);
         DbContext.SaveChanges();
@@ -59,7 +59,7 @@ public sealed class DryRunSuppressSaveChangesDbCommand : DryRunSuppressSaveChang
     [Fact]
     public async Task DryRunSuppressNoTransactionTestAsync()
     {
-        DbContext.GetHandle<IDryRunnable>().DryRun = true;
+        DbContext.GetHandle<IDryRunHandle>().DryRun = true;
         var entity = new Entity1 { Id = 1, Name = "Test2" };
         await DbContext.AddAsync(entity);
         await DbContext.SaveChangesAsync();
